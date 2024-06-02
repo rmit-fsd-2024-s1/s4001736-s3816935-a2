@@ -13,7 +13,9 @@ export default function CreateProduct() {
     product_price: "",
     product_image: "", 
     is_special: "", 
-    product_score: ""
+    product_score: 0, 
+    num_of_reviews: 0, 
+    total_score: 0
   });
   const [errors, setErrors] = useState({ });
   const { setMessage } = useContext(MessageContext);
@@ -27,12 +29,13 @@ export default function CreateProduct() {
     event.preventDefault();
 
     // Validate form and if invalid do not contact API.
-    const { trimmedFields, isValid } = await handleValidation();
-    if(!isValid)
-      return;
+    // const { trimmedFields, isValid } = await handleValidation();
+    // if(!isValid)
+    //   return;
 
     // Create product.
-    const product = await createProduct(trimmedFields);
+    // const product = await createProduct(trimmedFields);
+    const product = await createProduct(fields);
 
     // Show success message.
     setMessage(<><strong>{product.product_id}</strong> has been created successfully.</>);
@@ -45,21 +48,7 @@ export default function CreateProduct() {
     const trimmedFields = trimFields(fields, setFields);
     const currentErrors = { };
 
-    let key = "price";
-    let field = trimmedFields[key];
-    if(field.length === 0)
-      currentErrors[key] = "Price is required.";
-    else if(field.length > 40)
-      currentErrors[key] = "Price length cannot be greater than 40.";
-
-    key = "amount";
-    field = trimmedFields[key];
-    if(field.length === 0)
-      currentErrors[key] = "Amount is required.";
-    else if(field.length > 40)
-      currentErrors[key] = "Amount length cannot be greater than 40.";
-
-    key = "product_id";
+    let key = "product_id";
     field = trimmedFields[key];
     if(field.length === 0)
       currentErrors[key] = "product_id is required.";
@@ -67,6 +56,20 @@ export default function CreateProduct() {
       currentErrors[key] = "product_id is already taken.";
 
     setErrors(currentErrors);
+
+    key = "product_name";
+    let field = trimmedFields[key];
+    if(field.length === 0)
+      currentErrors[key] = "Product name is required.";
+    else if(field.length > 32)
+      currentErrors[key] = "Product name length cannot be greater than 32.";
+
+    key = "product_price";
+    field = trimmedFields[key];
+    if(field.length === 0)
+      currentErrors[key] = "Product price is required.";
+    else if(field.length > 6)
+      currentErrors[key] = "Product price length cannot be greater than 6.";
 
     return { trimmedFields, isValid: Object.keys(currentErrors).length === 0 };
   };
@@ -80,28 +83,46 @@ export default function CreateProduct() {
           <div className="row">
             <div className="col-12 col-md-6">
               <div className="form-group">
-                <label htmlFor="price" className="control-label">Price</label>
-                <input name="price" id="price" className="form-control"
-                  value={fields.price} onChange={handleInputChange} />
-                {errors.price && <div className="text-danger">{errors.price}</div>}
-              </div>
-            </div>
-
-            <div className="col-12 col-md-6">
-              <div className="form-group">
-                <label htmlFor="amount" className="control-label">Amount</label>
-                <input name="amount" id="amount" className="form-control"
-                  value={fields.amount} onChange={handleInputChange} />
-                {errors.amount && <div className="text-danger">{errors.amount}</div>}
-              </div>
-            </div>
-
-            <div className="col-12 col-md-6">
-              <div className="form-group">
-                <label htmlFor="product_id" className="control-label">product_id</label>
+                <label htmlFor="product_id" className="control-label">Product ID</label>
                 <input name="product_id" id="product_id" className="form-control"
                   value={fields.product_id} onChange={handleInputChange} />
                 {errors.product_id && <div className="text-danger">{errors.product_id}</div>}
+              </div>
+            </div>
+
+            <div className="col-12 col-md-6">
+              <div className="form-group">
+                <label htmlFor="product_name" className="control-label">Product Name</label>
+                <input name="product_name" id="product_name" className="form-control"
+                  value={fields.product_name} onChange={handleInputChange} />
+                {errors.product_name && <div className="text-danger">{errors.product_name}</div>}
+              </div>
+            </div>
+
+            <div className="col-12 col-md-6">
+              <div className="form-group">
+                <label htmlFor="product_price" className="control-label">Product Price</label>
+                <input name="product_price" id="product_price" className="form-control"
+                  value={fields.product_price} onChange={handleInputChange} />
+                {errors.product_price && <div className="text-danger">{errors.product_price}</div>}
+              </div>
+            </div>
+
+            <div className="col-12 col-md-6">
+              <div className="form-group">
+                <label htmlFor="product_image" className="control-label">Product Image</label>
+                <input name="product_image" id="product_image" className="form-control"
+                  value={fields.product_image} onChange={handleInputChange} />
+                {errors.product_image && <div className="text-danger">{errors.product_image}</div>}
+              </div>
+            </div>
+
+            <div className="col-12 col-md-6">
+              <div className="form-group">
+                <label htmlFor="is_special" className="control-label">Is Special?</label>
+                <input name="is_special" id="is_special" className="form-control"
+                  value={fields.is_special} onChange={handleInputChange} />
+                {errors.is_special && <div className="text-danger">{errors.is_special}</div>}
               </div>
             </div>
             

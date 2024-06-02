@@ -1,6 +1,9 @@
 GitHub link: 
 https://github.com/rmit-fsd-2024-s1/s4001736-s3816935-a2
 
+Contributions: 
+No contributions from Julie Sok (s4001736)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
