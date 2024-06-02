@@ -1,24 +1,10 @@
 import axios from "axios";
 
 const API_HOST = "http://localhost:4000";
+const RECEIPT_KEY = "receipt"; 
+const SUMMARYPRICE_KEY = "summaryPrice"; 
 
-// --- User ---------------------------------------------------------------------------------------
-// async function findItemInCart(username, product_id) {
-//   const response = await axios.get(API_HOST + "/api/cartItem/findItem", { params: { username, product_id } });
-//   const user = response.data;
-  
-//   // NOTE: In this example the login is also persistent as it is stored in local storage.
-//   if(user !== null)
-//     setUser(user);
-
-//   return user;
-// }
-
-// async function findItem(id) {
-//   const response = await axios.get(API_HOST + `/api/cart/select/${id}`);
-
-//   return response.data;
-// }
+// ------------------------------------------------------------------- Cart -----------------------------------------------------------------------------------------------------------------
 
 async function createCart(cart) {
   const response = await axios.post(API_HOST + "/api/cart", cart);
@@ -38,39 +24,71 @@ async function updateCart(cart) {
   return response.data; 
 }
 
-async function createCartItem(item) {
+async function deleteCart(id) {
+  const response = await axios.delete(API_HOST + `/api/cart/select/${id}`); 
+
+  return response.data;
+}
+
+// ------------------------------------------------------------------ Items in Cart ---------------------------------------------------------------------------------------------------------
+
+async function createCartItem(item) {    // exports.create
   const response = await axios.post(API_HOST + "/api/cartItem", item);
 
   return response.data;
 }
 
-async function findCartItem(cart_id, product_id) {
+// Find all items in a cart (for shopping cart page)
+async function findAllItems(cart_id) {    // exports.findAll
+  const response = await axios.get(API_HOST + "/api/cartItem", { params: {cart_id}});
+
+  return response.data;
+}
+
+// Find a specific item in a cart
+async function findCartItem(cart_id, product_id) {    // exports.findOne
   const response = await axios.get(API_HOST + "/api/cartItem/findItem", { params: {cart_id, product_id} });
 
   return response.data;
 }
 
-async function updateCartItem(item) {
+// Update the quantity of an item in cart
+async function updateCartItem(item) {    // exports.update
   const response = await axios.put(API_HOST + "/api/cartItem", item); 
 
   return response.data; 
 }
 
-// async function updateUser(user) {
-//   console.log(user);
-//   const response = await axios.put(API_HOST + "/api/users", user);   // Talk to routes "update a new user"
+async function deleteItem(id) {
+  const response = await axios.delete(API_HOST + `/api/cartItem/select/${id}`); 
 
-//   return response.data;
-// }
+  return response.data;
+}
 
-// async function deleteUser(id) {
-//   const response = await axios.delete(API_HOST + `/api/users/select/${id}`); 
+//----------------------------------------------------------------- Local Storage ------------------------------------------------------------------------------------------------------
 
-//   return response.data;
-// }
+function setReceipt(items) {
+  localStorage.setItem(RECEIPT_KEY, JSON.stringify(items));
+}
 
+function getReceipt() {
+  const data = localStorage.getItem(RECEIPT_KEY);
+  
+  return JSON.parse(data);
+}
 
+function setSummaryPrice(price) {
+  localStorage.setItem(SUMMARYPRICE_KEY, JSON.stringify(price));
+}
+
+function getSummaryPrice() {
+  const data = localStorage.getItem(SUMMARYPRICE_KEY);
+  
+  return JSON.parse(data);
+}
 
 export {
-  createCart, findCart, updateCart, createCartItem, findCartItem, updateCartItem
+  createCart, findCart, updateCart, deleteCart, 
+  createCartItem, findAllItems, findCartItem, updateCartItem, deleteItem, 
+  setReceipt, getReceipt, setSummaryPrice, getSummaryPrice
 }

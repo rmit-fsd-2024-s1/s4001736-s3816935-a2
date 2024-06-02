@@ -1,89 +1,113 @@
 import React, { useState, useEffect } from "react";
 
-// import { useNavigate } from "react-router-dom"
-// import { getProducts} from "../repository/products";
-// import { getCart, getTotalPrice, removeItem } from "../repository/cart";
-// import deleteButton from "../icons/deleteicon.png";
+import { useNavigate } from "react-router-dom"
+import { getProductImages} from "../repository/products";
+import { findCart, findAllItems, deleteItem, updateCart, deleteCart } from "../repository/cart";
+import { updateUserCart } from "../repository/credentials"; 
+import deleteButton from "../icons/deleteicon.png";
 
 export default function ShoppingCart(props){
-  // const [user, setUser] = useState(); 
-  // const [isLoading, setIsLoading] = useState(true);
-  // // const products = getProducts();
-  // // const cart = getCart(); 
-  // // // const [totalPrice, setTotalPrice] = React.useState(0); 
-  // // const navigate = useNavigate();
-  // // const totalPrice = getTotalPrice(); 
-  // // // const [totalPrice, setTotalPrice] = useState(0); 
+  const [isEmpty, setIsEmpty] = useState(true);
+  const [totalPrice, setTotalPrice] = useState("");
+  const [cartItems, setCartItems] = useState([]);
+  const productImages = getProductImages(); 
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   async function loadUser() {
-  //     const currentUser = await findUser(props.user.username);
-
-  //     setUser(currentUser);
-  //     // console.log(currentProducts);
-  //     setIsLoading(false);
-  //   }
-
-  //   loadUser();
-  // }, []);
-
-  // // const updateTotalPrice = (price) => {
-  // //   setTotalPrice(price); 
-  // //   console.log(price);
-  // // }
-
-  // const handleCheckOut = (event) => {
-  //   event.preventDefault();
-  //   navigate("/checkout");
-  // }
-
-  // const deleteItem = (id) => {
-  //   removeItem(id); 
-  //   alert("Item removed from cart!");
-  //   navigate("/shoppingcart"); 
-  // }
-
-  // const handleGoBack = () => {
-  //   //event.preventDefault();
-  //   navigate("/");
-  // }
-  
-
-  // if (totalPrice == 0) {
-  //   return <div className="emptyCart">
-  //     <h4 className="emptyCart">Looks like your cart is empty!</h4>
-  //     <a href="#" onClick={handleGoBack}>Go back to shopping?</a>
-  //     </div>
-    
-  //   ;
-  // }
-
-  // else {
-  return (
-    <div className="main">
-      <h1>Shopping Cart</h1>
-      {props.user.curr_cart}
-
-      {/* <h4>Subtotal: ${totalPrice}</h4>
-      {cart.length !== 0 && 
-        cart.map((item, index) => { 
-          const currPrice = item.itemPrice * item.itemQuantity; return (   // Loop through products using map, display each product based on index
-        // <CartItems updateTotalPrice={updateTotalPrice} totalPrice={totalPrice} id={item.itemID} quantity={item.itemQuantity} />
-          <div className="cartItem" >   
-            <img src={item.itemImage} className="cartItemImage" ></img>   
-            <br/><span className="productName">{item.itemName}</span> 
-            <br/><span>x{item.itemQuantity}</span>
-            <br/><span className="productPrice">${currPrice}</span>
-            <br/><button onClick={() => deleteItem(item.itemID)}><img src={deleteButton} className="smallicon" alt="delete"/>Remove from cart</button>
-          </div>
-      )})
-      } 
-      <button className="btn btn-success mr-2" onClick={handleCheckOut}>Check out</button> */}
+  useEffect(() => {
+    async function loadCart() {
+      if (props.user.curr_cart === 0) {
+        return
+      }
+      const cartInfo = await findCart(props.user.curr_cart);
+      setTotalPrice(cartInfo.total_price); 
+      // console.log(totalPrice);
+      // console.log(cartInfo);
+      const cart = await findAllItems(props.user.curr_cart); 
+      setCartItems(cart); 
+      // console.log(cartItems);
+        
+      setIsEmpty(false);
       
+    }
+
+    loadCart();
+  }, []);
+
+  const handleCheckOut = (event) => {
+    event.preventDefault();
+    navigate("/checkout");
+  }
+
+  const removeItem = async (id, itemTotalPrice) => {
+    // event.preventDefault();
+    console.log(id); 
+    await deleteItem(id); 
+    console.log(id); 
+    const newTotalPrice = totalPrice - itemTotalPrice; 
+    if (newTotalPrice === 0) {    // Delete the cart 
+      const tempUser = {
+        username: props.user.username, 
+        curr_cart: 0
+      }
+      await deleteCart(props.user.curr_cart); 
+      const updatedUser = await updateUserCart(tempUser); 
+      props.loginUser(updatedUser); 
+      setIsEmpty(true);
+      alert("Item removed from cart!");
+      navigate("/shoppingcart");
+      return
+    }
+    setTotalPrice(newTotalPrice); 
+    const newCart = {
+      cart_id: props.user.curr_cart, 
+      total_price: newTotalPrice
+    }
+    await updateCart(newCart); 
+    const cart = await findAllItems(props.user.curr_cart); 
+    setCartItems(cart); 
+    alert("Item removed from cart!");
+    navigate("/shoppingcart"); 
+  }
+
+  const handleGoBack = () => {
+    //event.preventDefault();
+    navigate("/");
+  }
+
+  return (
+    <div>
+      <h1>Shopping Cart</h1>
+      <div>
+        {isEmpty ? 
+        <div className="emptyCart">
+          <h4 className="emptyCart">Looks like your cart is empty!</h4>
+          <a href="#" onClick={handleGoBack}>Go back to shopping?</a>
+        </div>
+        :
+        <div className="main">
+          <h4>Subtotal: ${totalPrice}</h4>
+          
+          {cartItems.map((item) => {
+              const itemTotalPrice = (item.product.product_price * item.quantity).toFixed(2); // Always return 2 decimal places
+              return (
+                <div className="cartItem">
+                  <br/><img src={productImages[item.product_id-1]} className="cartItemImage" ></img>
+                  <br/>{item.product.product_name}
+                  <br/>${item.product.product_price}
+                  <br/>x{item.quantity}
+                  <br/><span className="productPrice">Total: ${itemTotalPrice}</span>
+                  <br/><button onClick={() => removeItem(item.id, itemTotalPrice)}><img src={deleteButton} className="smallicon" alt="delete"/>Remove from cart</button>
+                </div>
+              )
+          })}
+          <button className="btn btn-success mr-2" onClick={handleCheckOut}>Check out</button>
+        </div>
+        
+        }
+        
+      </div>
     </div>
   );
-    // }
-
 }
 
 /*

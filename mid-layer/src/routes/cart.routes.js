@@ -12,6 +12,8 @@ module.exports = (express, app) => {
 
   router.put("/", controller.update);
 
+  router.delete("/select/:id", controller.delete);
+
   // Add routes to server.
   app.use("/api/cart", router);
 };

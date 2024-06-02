@@ -28,9 +28,16 @@ async function createUser(user) {
   return response.data;
 }
 
-async function updateUser(user) {
+async function updateUserName(user) {
   console.log(user);
-  const response = await axios.put(API_HOST + "/api/users", user);   // Talk to routes "update a new user"
+  const response = await axios.put(API_HOST + "/api/users/name", user);   // Talk to routes "update a new user"
+
+  return response.data;
+}
+
+async function updatePassword(user) {
+  console.log(user);
+  const response = await axios.put(API_HOST + "/api/users/password", user);   // Talk to routes "update a new user"
 
   return response.data;
 }
@@ -82,6 +89,6 @@ async function getProducts() {
 
 export {
   verifyUser, findUser, createUser, 
-  updateUser, updateUserCart, deleteUser, getPosts, 
-  createPost, getUser, removeUser, getProducts
+  updateUserName, updatePassword, updateUserCart, deleteUser, getPosts, 
+  createPost, setUser, getUser, removeUser, getProducts
 }

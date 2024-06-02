@@ -23,6 +23,10 @@ module.exports = (sequelize, DataTypes) =>
     curr_cart: {
       type: DataTypes.INTEGER, 
       allowNull: false
+    }, 
+    blocked: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false
     }
   }, {
     // Don't add the timestamp attributes (updatedAt, createdAt).

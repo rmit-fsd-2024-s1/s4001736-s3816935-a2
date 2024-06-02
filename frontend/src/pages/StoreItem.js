@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { findUser, updateUserCart } from "../repository/credentials";
 import { createCart, findCart, updateCart, createCartItem, findCartItem, updateCartItem } from "../repository/cart"; 
+import { Rating } from 'react-simple-star-rating'; 
 
 export default function StoreItem(props) {
   const [quantity, setQuantity] = useState(1); 
+  const navigate = useNavigate();
+  const score = parseFloat(props.product.product_score); 
+  const scoreDec = score.toFixed(1); 
   // const [user, setUser] = useState();
   // const [isLoading, setIsLoading] = useState(true);
   // const [currQuantity, setCurrQuantity] = useState(0); 
@@ -59,21 +64,28 @@ export default function StoreItem(props) {
   //   // console.log(quantity);
   // }
 
-  const handleAddToCart = async (event) => {
-    const user = await findUser(props.user.username);    // Main purpose is to check curr_cart of user by getting the user info to know whether a cart already exists
-    console.log(user);
-    addToCart(event, user, props.id, quantity, props.price); 
+  const toRateProduct = (product) => {
+    // console.log(movieID);
+    props.rateWhichProduct(product);
+    // console.log(movie);
+    navigate("/review");
   }
 
-  const addToCart = async (event, user, id, quantity, price) => {
+  const handleAddToCart = async (event) => {
+    // const user = await findUser(props.user.username);    
+    console.log(props.user);
+    addToCart(event, props.user, props.product, quantity); 
+  }
+
+  const addToCart = async (event, user, product, quantity) => {
     event.preventDefault(); 
     // console.log(user); 
-    console.log(id);
+    console.log(props.user);
     
     //----------------------------------------------------------- No Cart yet --------------------------------------------------------------------------------------------------------------------
 
     if (user.curr_cart === 0) {   // If user has no cart
-      const totalPrice = quantity * price; 
+      const totalPrice = quantity * product.product_price; 
       // console.log(totalPrice);
       const cart = {
         total_price: totalPrice, 
@@ -83,17 +95,19 @@ export default function StoreItem(props) {
       console.log(cartInfo);
       const cartItem = {
         quantity: quantity, 
-        price: price, 
-        item_total_price: totalPrice, 
+        // price: price, 
+        // item_total_price: totalPrice, 
         cart_id: cartInfo.cart_id, 
-        product_id: id
+        product_id: product.product_id
       }
       await createCartItem(cartItem);    // Create new item 
       const tempUser = {   // Set a tempUser to update curr_cart of user so that new cart won't be created til checked out
         username: user.username, 
-        cart_id: cartInfo.cart_id
+        curr_cart: cartInfo.cart_id
       }
-      await updateUserCart(tempUser); 
+      const updatedUser = await updateUserCart(tempUser); 
+      console.log(updatedUser); 
+      props.loginUser(updatedUser); 
       alert("Product added to cart! "); 
       return
     }
@@ -103,17 +117,17 @@ export default function StoreItem(props) {
     const cart = await findCart(user.curr_cart);    // Find the cart
     const currTotalPrice = parseFloat(cart.total_price); 
 
-    const product = await findCartItem(user.curr_cart, id);    // Check if the added product is already in the cart
-    console.log(product); 
+    const item = await findCartItem(user.curr_cart, product.product_id);    // Check if the added product is already in the cart
+    console.log(item); 
 
-    if (product === null) {    // If the product is not in cart
-      const itemTotalPrice = quantity * price; 
+    if (item === null) {    // If the product is not in cart
+      const itemTotalPrice = quantity * product.product_price; 
       const cartItem = {
         quantity: quantity, 
-        price: price, 
-        item_total_price: itemTotalPrice, 
+        // price: price, 
+        // item_total_price: itemTotalPrice, 
         cart_id: user.curr_cart, 
-        product_id: id
+        product_id: product.product_id
       }
       await createCartItem(cartItem); 
       const totalPrice = currTotalPrice + itemTotalPrice; 
@@ -130,17 +144,18 @@ export default function StoreItem(props) {
     }
     
     // ----------------------------------------------------------- Product in Cart, add quantity -----------------------------------------------------------------------------------------------
-    console.log(product.quantity);
-    const newQuantity = quantity + product.quantity; 
-    const itemTotalPrice = newQuantity * price; 
+    console.log(item.quantity);
+    const newQuantity = quantity + item.quantity; 
+    const itemTotalPrice = newQuantity * product.product_price; 
+    const oldTotalPrice = item.quantity * product.product_price; 
     const cartItem = {
       cart_id: user.curr_cart, 
-      product_id: id,
-      quantity: newQuantity, 
-      item_total_price: itemTotalPrice 
+      product_id: product.product_id,
+      quantity: newQuantity 
+      // item_total_price: itemTotalPrice 
     }
     await updateCartItem(cartItem); 
-    const totalPrice = currTotalPrice - product.item_total_price + itemTotalPrice; 
+    const totalPrice = currTotalPrice - oldTotalPrice + itemTotalPrice; 
     const tempCart = {
       cart_id: user.curr_cart, 
       total_price: totalPrice
@@ -156,8 +171,12 @@ export default function StoreItem(props) {
     <div className="products" >   
       {/* id is loop index as image urls are hardcoded  */}
       <img src={props.image} className="productImage" ></img>   
-      <br/><span className="productName">{props.name}</span> 
-      <br/><span className="productPrice">${props.price}</span>
+      <br/><span>{props.product.product_name}</span> 
+      <br/><span className="productPrice">${props.product.product_price}</span>
+      <br/><span className="rating">{scoreDec}</span> <Rating initialValue={props.product.product_score} readonly/>
+      <br/><span className="numberOfReviews">{props.product.num_of_reviews} review(s)</span>
+      <br/><a href="#" onClick={() => toRateProduct(props.product)}>Reviews</a>
+      <br/>
       <br/>{props.user !== null && 
         <>
           <button className="btn btn-secondary mr-2" onClick={decreaseQuantity}>-</button>

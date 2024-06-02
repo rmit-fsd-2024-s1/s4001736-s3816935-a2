@@ -12,6 +12,14 @@ module.exports = (sequelize, DataTypes) =>
     text: {
       type: DataTypes.TEXT,
       allowNull: false
+    }, 
+    flagged: {
+      type: DataTypes.BOOLEAN, 
+      allowNull: false
+    }, 
+    deleted: {
+      type: DataTypes.BOOLEAN, 
+      allowNull: false
     }
   }, {
     // Don't add the timestamp attributes (updatedAt, createdAt).

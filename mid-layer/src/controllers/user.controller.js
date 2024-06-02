@@ -36,21 +36,18 @@ exports.create = async (req, res) => {
     first_name: req.body.first_name,
     last_name: req.body.last_name, 
     joining_date: req.body.joining_date, 
-    curr_cart: req.body.curr_cart
+    curr_cart: req.body.curr_cart, 
+    blocked: false
   });
 
   res.json(user);
 };
 
 // Update a user. 
-exports.update = async (req, res) => {
-  console.log(req.body.username)
-  const hash = await argon2.hash(req.body.password, { type: argon2.argon2id });
+exports.updateName = async (req, res) => {
   const user = await db.user.findByPk(req.body.username);
   
-  console.log(req.body);
   // Update user.
-  user.password_hash = hash;
   user.first_name = req.body.first_name; 
   user.last_name = req.body.last_name; 
 
@@ -59,10 +56,21 @@ exports.update = async (req, res) => {
   res.json(user);
 };
 
+exports.updatePassword = async (req, res) => {
+  const hash = await argon2.hash(req.body.password, { type: argon2.argon2id });
+  const user = await db.user.findByPk(req.body.username);
+
+  user.password_hash = hash; 
+
+  await user.save();
+
+  res.json(user);
+}
+
 exports.updateCart = async (req, res) => {
   const user = await db.user.findByPk(req.body.username);
 
-  user.curr_cart = req.body.cart_id; 
+  user.curr_cart = req.body.curr_cart; 
 
   await user.save(); 
   res.json(user);

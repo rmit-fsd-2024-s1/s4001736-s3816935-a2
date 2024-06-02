@@ -144,14 +144,16 @@ img.ssfImg {
   float: left;
   width: 22%;
   min-width: 200px;
-  height: 60%;
-  min-height: 450px;
+  height: 50%;
+  min-height: 575px;
   margin: 20px; 
-  padding: 20px;
+  padding: 10px;
   border-radius: 15px;
   box-shadow: 0px 4px 14px 8px #d8d8d8;
   overflow: auto;
-  font-size: 2vw;
+  font-size: 20px;
+  font-weight: bold;
+  /* font-size: 2vw; */
   justify-content: center;
 }
 
@@ -168,19 +170,25 @@ img.ssfImg {
 }
 
 .productName {
-  font-size: 25px;
+  font-size: 20px;
   /* font-size: 1.5vw; */
 }
 
 .productImage {
   width: 100%;
-  max-height: 200px;
+  /* max-height: 275px; */
+  height: 270px;
   justify-content: center;
 }
 
 .productPrice {
   font-size: 25px; 
   font-weight: bold;
+}
+
+.numberOfReviews {
+  font-size: 15px; 
+  font-weight:initial; 
 }
 
 div.homepage-headings {
@@ -212,7 +220,7 @@ div.emptyCart {
 .cartItem {
   align-items: left;
   width:1400px;
-  height:330px;
+  height:350px;
   margin:10px; 
 	padding:20px;
   border-radius: 15px;
@@ -222,8 +230,8 @@ div.emptyCart {
 }
 
 .cartItemImage {
-  width:150px;
-  height:150px;
+  width:200px;
+  height:200px;
 }
 
 .form {
@@ -246,6 +254,16 @@ div.emptyCart {
 
 .reviews {
   padding-left:400px;
+}
+
+.rating {
+  font-weight: bold;
+  font-size: 30px; 
+  color: orange; 
+}
+
+.reviewText {
+  font-size: 15px;
 }
 
 section {
@@ -279,6 +297,7 @@ article.mealRec {
 footer {
   font-size: 1rem;
     bottom: 0;
+    margin-top:auto;    /* footer stays at bottom */
     height: 300px;
     width: 100%;
     padding-top: 20rem;

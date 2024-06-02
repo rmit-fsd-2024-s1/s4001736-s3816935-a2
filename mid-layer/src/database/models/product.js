@@ -20,6 +20,18 @@ module.exports = (sequelize, DataTypes) =>
     is_special: {
       type: DataTypes.BOOLEAN, 
       allowNull: false
+    }, 
+    product_score: {
+      type: DataTypes.FLOAT,
+      allowNull: false
+    },
+    num_of_reviews: {
+      type: DataTypes.INTEGER, 
+      allowNull: false
+    }, 
+    total_score: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     }
   }, {
     // Don't add the timestamp attributes (updatedAt, createdAt).

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Popup from "reactjs-popup";
 import { useNavigate } from "react-router-dom";
-import { verifyUser, findUser, updateUser, deleteUser } from "../repository/credentials";
+import { verifyUser, findUser, updateUserName, updatePassword, deleteUser } from "../repository/credentials";
 //import { getUsers, getEmail, updateUsername, updatePassword, deleteUser, getJoiningDate } from "../repository/credentials";
 import profilePic from "../icons/usericon.jpg"; 
 import deleteButton from "../icons/deleteicon.png"; 
@@ -80,17 +80,15 @@ export default function MyProfile(props) {
 
     const user = {
       username:props.user.username, 
-      password:props.user.password,
       first_name:trimmedNameFields.first_name, 
-      last_name:trimmedNameFields.last_name, 
-      joining_date:props.user.joining_date, 
-      curr_cart: props.user.curr_cart
+      last_name:trimmedNameFields.last_name
     }
-    await updateUser(user);
+    const newUser = await updateUserName(user);
 
     props.logoutUser();
-    props.loginUser(user);   // Login with the new name to update all the names on the pages
-    setUser(user); 
+    props.loginUser(newUser);   // Login with the new name to update all the names on the pages
+    setUser(newUser); 
+    console.log(props.user); 
 
     const temp = { ...nameFields };
     temp.first_name = ""; 
@@ -170,17 +168,14 @@ export default function MyProfile(props) {
     const user = {
       username:props.user.username, 
       password:trimmedPasswordFields.newPassword,
-      first_name:props.user.first_name, 
-      last_name:props.user.last_name, 
-      joining_date:props.user.joining_date, 
-      curr_cart: props.user.curr_cart
     }
-    const np = await updateUser(user);
-    console.log(np);
+    const newPassword = await updatePassword(user);
+    // console.log(np);
 
     props.logoutUser();
-    props.loginUser(user);   
-    setUser(user); 
+    props.loginUser(newPassword);   
+    setUser(newPassword); 
+    console.log(props.user); 
 
     const temp = { ...passwordFields };
     temp.oldPassword = ""; 
@@ -262,8 +257,8 @@ export default function MyProfile(props) {
       <button onClick={hideEdits}><img src={deleteButton} className="smallicon" alt="delete"/>Delete Account</button>}>
         {
           close => (
-            <div className="main">
-              Are you sure you want to delete this account? 
+            <div>
+              Are you sure you want to delete this account? &nbsp;
               <button type="button" onClick={deleteAcc}>
                 Yes
               </button>

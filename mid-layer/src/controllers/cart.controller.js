@@ -36,3 +36,10 @@ exports.update = async (req, res) => {
 
   res.json(cart);
 };
+
+exports.delete = async (req, res) => {
+  const cart = await db.cart.findByPk(req.params.id);
+
+  await cart.destroy();
+  res.json(cart);
+}

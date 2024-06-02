@@ -23,7 +23,7 @@ require("./src/routes/user.routes.js")(express, app);
 require("./src/routes/product.routes.js")(express, app);
 require("./src/routes/cart.routes.js")(express, app);
 require("./src/routes/cartItem.routes.js")(express, app);
-// require("./src/")
+require("./src/routes/review.routes.js")(express, app);
 // require("./src/routes/post.routes.js")(express, app);
 
 // Set port, listen for requests.

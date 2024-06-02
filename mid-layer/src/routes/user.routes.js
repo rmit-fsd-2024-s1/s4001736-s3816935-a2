@@ -15,7 +15,9 @@ module.exports = (express, app) => {
   router.post("/", controller.create);
 
   // Update a user.
-  router.put("/", controller.update);
+  router.put("/name", controller.updateName); 
+
+  router.put("/password", controller.updatePassword); 
 
   router.put("/cart", controller.updateCart);
 

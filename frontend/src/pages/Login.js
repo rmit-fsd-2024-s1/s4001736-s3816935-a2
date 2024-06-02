@@ -23,6 +23,11 @@ export default function Login(props) {
       setErrorMessage("Username and / or password invalid, please try again.");
       return;
     }
+    else if(user.blocked === true) {
+      setFields({ ...fields, password: "" });
+      setErrorMessage("Your account has been blocked! ");
+      return;
+    }
 
     // Set user state.
     props.loginUser(user);

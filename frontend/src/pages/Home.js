@@ -1,10 +1,10 @@
 import React, { useState, useEffect} from "react";
-import { getProducts } from "../repository/products";
+import { getProducts, getProductImages } from "../repository/products";
 import StoreItems from "./StoreItem";
 
 export default function Home(props) {
   const [products, setProducts] = useState([]); 
-  
+  const productImages = getProductImages(); 
 
   useEffect(() => {
     async function loadProducts() {
@@ -31,7 +31,8 @@ export default function Home(props) {
         {products.map((item, index) => {
           // console.log(item)
           if (item.is_special === true) {
-            return <StoreItems id={item.product_id} name={item.product_name} price={item.product_price} image={item.product_image} user={props.user}/>
+            return <StoreItems product={item} image={productImages[index]} loginUser={props.loginUser} user={props.user} rateWhichProduct={props.rateWhichProduct}/>
+            // return <StoreItems id={item.product_id} name={item.product_name} price={item.product_price} image={productImages[index]} score={item.product_score} loginUser={props.loginUser} user={props.user}/>
           }
         })}
       </div>
@@ -42,7 +43,8 @@ export default function Home(props) {
         {products.map((item, index) => {
           // console.log(item)
           if (item.is_special === false) {
-            return <StoreItems id={item.product_id} name={item.product_name} price={item.product_price} image={item.product_image} user={props.user}/>
+            return <StoreItems product={item} image={productImages[index]} loginUser={props.loginUser} user={props.user} rateWhichProduct={props.rateWhichProduct}/>
+            // return <StoreItems id={item.product_id} name={item.product_name} price={item.product_price} image={productImages[index]} score={item.product_score} loginUser={props.loginUser} user={props.user}/>
           }
         })}
       </div>

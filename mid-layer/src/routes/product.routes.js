@@ -5,6 +5,8 @@ module.exports = (express, app) => {
   // Select all products.
   router.get("/", controller.all);
 
+  router.put("/", controller.update); 
+
   // Add routes to server.
   app.use("/api/products", router);
 };
